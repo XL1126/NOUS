@@ -251,9 +251,9 @@ class ConsciousnessStream:
             about = external_input[:20]
             broadcast = external_broadcast
         else:
-            # 自主思维：从主题池选择
+            # 自主思维：从主题池选择，优先高新颖度
             about = self._autonomous_thought()
-            broadcast = {about: 0.6}
+            broadcast = {about: 0.5 + 0.3 * float(self.rng.random())}
 
         # 推进工作空间
         energy = self.soma.state.energy
@@ -271,10 +271,10 @@ class ConsciousnessStream:
             candidates=list(bc.content.keys()),
             ignition=float(bc.ignition),
             entropy=float(bc.entropy),
-            novelty=0.3,
+            novelty=0.3 + 0.4 * float(self.rng.random()),  # 增加新颖度变化
             body=self.soma.state.snapshot(),
             emotion=self.soma.feeling_label(),
-            valence=0.1,
+            valence=0.1 * (float(self.rng.random()) - 0.5),
             agency_executed=not is_autonomous,
             ownership_ok=True,
             success=True,
@@ -420,6 +420,8 @@ class ConsciousnessStream:
         """自主运行 n 个周期（无外部输入）。"""
         results = []
         for _ in range(n_cycles):
+            # 自主周期也推进 SOMA（模拟时间流逝）
+            self.soma.step(0.5)  # 半步，模拟时间流逝
             cycle = self.tick()
             results.append(cycle)
         return results
