@@ -39,6 +39,7 @@ from .consciousness.temporal import TemporalMind
 from .consciousness.stream import ConsciousnessStream, ConsciousState
 from .consciousness.neri import NERI
 from .consciousness.emergence import EmergenceMapper
+from .consciousness.fly_brain import FlyBrainInspired
 from .agency.actions import ActionLoop
 from .agency.boundary import SelfWorldBoundary
 
@@ -144,6 +145,8 @@ class NousMind:
         # 涌现内容生成：NERI 动力学 → 思维内容
         self.emergence = EmergenceMapper(self.space, rng=self.rng)
         self.last_emergent_thought = ""
+        # 果蝇脑启发：连接组原理增强
+        self.fly_brain = FlyBrainInspired(rng=self.rng)
         # SOI 线索缓存（用于自我归属贝叶斯更新）
         self._soi_appearance = 0.5
         self._soi_contiguity = 0.5
@@ -493,6 +496,16 @@ class NousMind:
         neri_state = self.neri.tick(external_input=neri_input, prompt=raw[:30])
         # NERI 动力学 → 语言调制
         neri_mod = self._neri_to_language(neri_state)
+
+        # 果蝇脑启发：连接组原理更新
+        fly_input = vec[:32] if vec.size >= 32 else np.resize(vec, 32)
+        fly_state = self.fly_brain.full_update(
+            sensory_input=fly_input,
+            arousal=self.soma.state.arousal,
+            sleep_pressure=self.soma.state.sleep_pressure,
+            reward=0.5 if intent in ("remember", "teach_fact") else 0.1,
+            predicted_reward=0.3,
+        )
 
         reply, learned = self._compose_reply(intent, iconf, raw, vec, labels, focus, bc)
         # 用 NERI 动力学调制回复
