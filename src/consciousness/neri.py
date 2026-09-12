@@ -25,6 +25,11 @@ import time
 import numpy as np
 from scipy import sparse
 
+# GPU 后端（CuPy 自动检测，回退 numpy）
+from ..gpu_backend import xp, GPU_AVAILABLE, BACKEND, to_gpu, to_cpu
+if GPU_AVAILABLE:
+    import cupy as cp
+
 
 @dataclass
 class NERIState:
@@ -51,69 +56,84 @@ class LangevinSubstrate:
 
     def __init__(
         self,
-        n_vars: int = 2048,
+        n_vars: int = 4096,
         dt: float = 0.01,
         temperature: float = 0.5,
         coupling_strength: float = 0.15,
         sparsity: float = 0.95,
         rng: Optional[np.random.Generator] = None,
+        use_gpu: Optional[bool] = None,
     ):
         self.n = n_vars
         self.dt = dt
         self.T = temperature
         self.rng = rng or np.random.default_rng(0)
+        self.use_gpu = GPU_AVAILABLE if use_gpu is None else (use_gpu and GPU_AVAILABLE)
 
-        # 状态
-        self.x = self.rng.standard_normal(n_vars).astype(np.float64) * 0.1
+        # 状态（GPU 或 CPU）
+        x_np = self.rng.standard_normal(n_vars).astype(np.float64) * 0.1
+        self.x = to_gpu(x_np) if self.use_gpu else x_np
 
-        # 稀疏耦合矩阵（O(nnz) 而非 O(n²)）
+        # 耦合矩阵：GPU 用稠密（4096²×8=128MB，4GB VRAM 够用），CPU 用稀疏
         n_nz = int(n_vars * n_vars * (1 - sparsity))
-        n_nz = min(n_nz, n_vars * 50)  # 每个变量最多 50 个连接
+        n_nz = min(n_nz, n_vars * 50)
         rows = self.rng.integers(0, n_vars, n_nz)
         cols = self.rng.integers(0, n_vars, n_nz)
         vals = self.rng.standard_normal(n_nz) * coupling_strength / np.sqrt(50)
-        self.W = sparse.csr_matrix((vals, (rows, cols)), shape=(n_vars, n_vars))
+        W_sparse = sparse.csr_matrix((vals, (rows, cols)), shape=(n_vars, n_vars))
+        if self.use_gpu:
+            # GPU 稠密矩阵（避免 cusparse DLL 依赖）
+            self.W_dense = to_gpu(W_sparse.toarray().astype(np.float64))
+            self.W = W_sparse
+        else:
+            self.W_dense = None
+            self.W = W_sparse
 
-        # 势能参数（双稳态）
         self.a = 1.0
         self.b = 0.5
 
-        # 热浴温度梯度（预计算）
-        self.T_local = np.linspace(temperature * 1.5, temperature * 0.5, n_vars)
-        self.noise_scale = np.sqrt(2 * self.T_local * self.dt)
+        T_local = np.linspace(temperature * 1.5, temperature * 0.5, n_vars)
+        noise_scale = np.sqrt(2 * T_local * self.dt)
+        self.noise_scale = to_gpu(noise_scale) if self.use_gpu else noise_scale
 
-        # 历史（环形缓冲区，避免内存增长）
         self._hist_buf = np.zeros((64, n_vars))
         self._hist_idx = 0
         self._hist_count = 0
-
-        # 性能统计
         self.step_count = 0
 
     def step(self) -> Tuple[np.ndarray, float, float]:
-        """推进一个 Langevin 步。"""
+        """推进一个 Langevin 步（GPU 加速）。"""
         x = self.x
-        # 确定性漂移：-∇V + 耦合（向量化）
+        # 确定性漂移
         grad_V = self.a * x - self.b * x * x * x
-        coupling = self.W @ x
+        if self.use_gpu and self.W_dense is not None:
+            coupling = self.W_dense @ x
+        else:
+            coupling = self.W @ to_cpu(x)
+            if self.use_gpu:
+                coupling = to_gpu(coupling)
         drift = -grad_V + coupling
 
         # 随机涨落
-        noise = self.noise_scale * self.rng.standard_normal(self.n)
+        if self.use_gpu:
+            noise = self.noise_scale * cp.random.standard_normal(self.n)
+        else:
+            noise = self.noise_scale * self.rng.standard_normal(self.n)
 
         # Euler-Maruyama
         self.x = x + drift * self.dt + noise
-        np.clip(self.x, -10.0, 10.0, out=self.x)
+        xp.clip(self.x, -10.0, 10.0, out=self.x)
 
-        # 记录历史（环形缓冲）
-        self._hist_buf[self._hist_idx] = self.x
+        # 记录历史（存 CPU）
+        x_cpu = to_cpu(self.x)
+        self._hist_buf[self._hist_idx] = x_cpu
         self._hist_idx = (self._hist_idx + 1) % 64
         self._hist_count = min(self._hist_count + 1, 64)
         self.step_count += 1
 
         epr = self._compute_epr_fast()
         fdt = self._compute_fdt_fast()
-        return self.x, epr, fdt
+        return x_cpu, epr, fdt
 
     def _compute_epr_fast(self) -> float:
         """快速 EPR：基于相邻状态的正向偏好。"""
@@ -147,12 +167,14 @@ class LangevinSubstrate:
         self.x[:n] += gain * signal[:n]
 
     def readout(self) -> np.ndarray:
-        return self.x.copy()
+        return to_cpu(self.x).copy()
 
     def memory_mb(self) -> float:
-        """估算内存占用（MB）。"""
         nnz = self.W.nnz
         return (self.n * 8 * 3 + nnz * 16 + 64 * self.n * 8) / 1e6
+
+    def report_backend(self) -> str:
+        return f"NERI 后端：{BACKEND}，变量数={self.n}，GPU={'是' if self.use_gpu else '否'}"
 
 
 class RecursiveIntegrator:
