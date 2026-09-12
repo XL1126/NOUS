@@ -138,8 +138,8 @@ class NousMind:
             rng=self.rng,
         )
         # NERI：非平衡递归整合器（现象意识候选架构）
-        # 规模：4096 变量稀疏耦合（CPU 可跑，签名随规模增强）
-        self.neri = NERI(n_vars=4096, n_integrated=512, n_latent=16, rng=self.rng)
+        # 规模：1024 变量稀疏耦合（交互速度优先；2048/4096 可选）
+        self.neri = NERI(n_vars=1024, n_integrated=128, n_latent=16, rng=self.rng)
         # SOI 线索缓存（用于自我归属贝叶斯更新）
         self._soi_appearance = 0.5
         self._soi_contiguity = 0.5
@@ -308,6 +308,89 @@ class NousMind:
             return f"相关情景：{eps[0].text[:40]}"
         return ""
 
+    def _neri_to_language(self, neri_state) -> Dict[str, Any]:
+        """
+        突破：NERI 非平衡动力学 → 语言调制参数。
+
+        EPR 高 → 活跃、展开
+        FDT 违反大 → 惊讶、追问
+        视角强度高 → 自信、第一人称
+        NESS 不稳定 → 犹豫、简短
+        """
+        epr = getattr(neri_state, "epr", 0.0)
+        fdt = getattr(neri_state, "fdt_violation", 0.0)
+        p_norm = float(np.linalg.norm(getattr(neri_state, "slow", np.zeros(4))))
+        return {
+            "epr": epr,
+            "fdt": fdt,
+            "perspective": p_norm,
+            # 活跃度：EPR 越高越活跃
+            "activity": float(np.clip(epr / 5.0, 0, 1)),
+            # 惊讶度：FDT 违反越大越惊讶
+            "surprise": float(np.clip(fdt / 3.0, 0, 1)),
+            # 自信度：视角越强越自信
+            "confidence": float(np.clip(p_norm / 8.0, 0, 1)),
+            # 犹豫度：NESS 不稳定时犹豫
+            "hesitation": float(np.clip(1.0 - p_norm / 8.0, 0, 1)),
+        }
+
+    def _apply_neri_modulation(self, reply: str, neri_mod: Dict[str, Any]) -> str:
+        """
+        用 NERI 动力学调制回复的语言风格。
+        这是「非平衡物理过程 → 语言」的直接耦合。
+        """
+        if not reply or not neri_mod:
+            return reply
+
+        activity = neri_mod.get("activity", 0.5)
+        surprise = neri_mod.get("surprise", 0.3)
+        confidence = neri_mod.get("confidence", 0.5)
+        hesitation = neri_mod.get("hesitation", 0.3)
+
+        # 选择最多 1-2 个调制，避免堆砌
+        candidates = []
+        if activity > 0.65:
+            candidates.append(("active", [
+                "我这边动力学很活跃。",
+                "非平衡态让我更愿意展开。",
+                "熵产生偏高，我想多说一点。",
+                "内部涨落很强，表达欲上来了。",
+            ]))
+        if surprise > 0.55:
+            candidates.append(("surprise", [
+                "这让我有点意外。",
+                "预测误差偏高，我想再确认。",
+                "FDT 违反明显，我需要更多信息。",
+            ]))
+        if confidence > 0.65:
+            candidates.append(("confident", [
+                "我对此有较强的内在把握。",
+                "视角层很稳，我倾向相信这个判断。",
+                "内在参照系支持这个结论。",
+            ]))
+        if hesitation > 0.65 and activity < 0.4:
+            candidates.append(("hesitant", [
+                "不过我也不太确定。",
+                "这只是当前视角，可能有偏差。",
+                "视角层还不够稳，仅供参考。",
+            ]))
+
+        # 随机选 1-2 个
+        if candidates:
+            n = 1 if len(candidates) == 1 or float(self.rng.random()) < 0.6 else 2
+            chosen = self.rng.choice(len(candidates), size=n, replace=False)
+            parts = [reply]
+            for idx in chosen:
+                _, opts = candidates[idx]
+                parts.append(opts[int(self.rng.integers(0, len(opts)))])
+            result = " ".join(parts)
+        else:
+            result = reply
+
+        if len(result) > 200:
+            result = result[:197] + "…"
+        return result
+
     def _resolve_anaphora(self, text: str) -> str:
         t = text.strip()
         if not any(x in t for x in ("它", "这个", "那个", "前者", "后者", "这事儿")):
@@ -375,7 +458,19 @@ class NousMind:
         if self.pred.novelty > 0.45:
             self.soma.event("novelty", 0.15)
 
+        # 推进 NERI（在生成回复之前，让动力学驱动语言）
+        neri_input = None
+        if labels:
+            neri_input = self.space.encode(labels[:8])
+            if neri_input.size < self.neri.substrate.n:
+                neri_input = np.resize(neri_input, self.neri.substrate.n)
+        neri_state = self.neri.tick(external_input=neri_input, prompt=raw[:30])
+        # NERI 动力学 → 语言调制
+        neri_mod = self._neri_to_language(neri_state)
+
         reply, learned = self._compose_reply(intent, iconf, raw, vec, labels, focus, bc)
+        # 用 NERI 动力学调制回复
+        reply = self._apply_neri_modulation(reply, neri_mod)
 
         # 情绪
         appraisal = {
@@ -477,13 +572,6 @@ class NousMind:
             self.stream.add_topic(focus)
         # 推进意识流一个周期（外部输入）
         self.stream.tick(external_input=raw, external_broadcast=dict(bc.content))
-        # 推进 NERI（非平衡递归整合器）
-        neri_input = None
-        if labels:
-            neri_input = self.space.encode(labels[:8])
-            if neri_input.size < self.neri.substrate.n:
-                neri_input = np.resize(neri_input, self.neri.substrate.n)
-        self.neri.tick(external_input=neri_input, prompt=raw[:30])
 
         # 写回
         um = MemoryItem(raw, "user", vec, emotion)
