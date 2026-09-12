@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>NOUS · 现象面板</title>
+<style>
+  :root { --bg:#0b1020; --card:#141b2f; --ink:#e8eefc; --mut:#8b9bb8; --acc:#5b8cff; --ok:#3dd68c; --warn:#f0b429; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.5 -apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+         background:var(--bg); color:var(--ink); padding:24px; }
+  h1 { font-size:20px; font-weight:600; margin:0 0 4px; }
+  .sub { color:var(--mut); margin-bottom:20px; font-size:12px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px; }
+  .card { background:var(--card); border-radius:12px; padding:16px; border:1px solid #243055; }
+  .card h2 { margin:0 0 12px; font-size:13px; font-weight:600; color:var(--mut); text-transform:uppercase; letter-spacing:.06em; }
+  .big { font-size:28px; font-weight:600; margin-bottom:4px; }
+  .row { display:flex; justify-content:space-between; margin:6px 0; font-size:13px; }
+  .row span:last-child { font-variant-numeric:tabular-nums; color:var(--acc); }
+  .bar { height:8px; background:#0a0f1c; border-radius:4px; overflow:hidden; margin-top:6px; }
+  .bar i { display:block; height:100%; background:linear-gradient(90deg,var(--acc),#8b5cf6); }
+  .tag { display:inline-block; padding:2px 8px; border-radius:999px; background:#1a2440; font-size:12px; margin:2px; }
+  .ok { color:var(--ok); } .warn { color:var(--warn); }
+  pre { white-space:pre-wrap; font-size:12px; color:var(--mut); margin:0; }
+  button { background:var(--acc); color:#fff; border:0; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:13px; }
+  button:hover { opacity:.9; }
+  .muted { color:var(--mut); font-size:12px; }
+</style>
+</head>
+<body>
+  <h1>NOUS 现象面板</h1>
+  <p class="sub">工程代理指标 · 非现象意识证明 · 数据来自 runtime/phenomenal.json</p>
+  <p><button onclick="load()">刷新</button> <span class="muted" id="ts"></span></p>
+  <div class="grid" id="root">加载中…</div>
+<script>
+const BARS = ['vividness','presence','nowness','selfhood','ownership','narrative_depth'];
+async function load() {
+  try {
+    const r = await fetch('runtime/phenomenal.json?t=' + Date.now());
+    if (!r.ok) throw new Error('no data');
+    const d = await r.json();
+    document.getElementById('ts').textContent = 'turns=' + d.turns + ' · ' + new Date().toLocaleTimeString();
+    const p = d.phenomenal || {};
+    let html = '';
+    html += card('身份', `<div class="big">${esc(d.name)}</div>
+      <div class="muted">${esc(d.emotion)} · ${esc(d.policy)} · need=${esc(d.need)}</div>
+      <div style="margin-top:8px">${(d.identity||[]).slice(-3).map(x=>`<span class="tag">${esc(x)}</span>`).join('')}</div>`);
+    html += card('现象标记', BARS.map(k => bar(k, p[k]||0)).join('') +
+      `<div class="row"><span>价态 valence</span><span>${(p.valence||0).toFixed(2)}</span></div>
+       <div class="row"><span>整合代理</span><span>${d.integrated}</span></div>
+       <pre>${esc(d.phenomenal_report||'')}</pre>`);
+    html += card('身体 SOMA', Object.entries(d.body||{}).map(([k,v])=>
+      `<div class="row"><span>${esc(k)}</span><span>${Number(v).toFixed(2)}</span></div>`).join(''));
+    html += card('自创生 / 行动', `
+      <div class="row"><span>维持动作</span><span class="ok">${esc(d.maintenance)}</span></div>
+      <div class="row"><span>生命力</span><span>${d.vitality}</span></div>
+      <div class="row"><span>回合年龄</span><span>${d.age_turns}</span></div>
+      <div class="row"><span>边界</span><span>${esc(d.boundary||'')}</span></div>
+      <pre>${esc(d.action_narrative||'')}</pre>
+      <pre>${esc(d.mortality||'')}</pre>`);
+    html += card('工作空间 / 目标', `<pre>${esc(d.workspace||'')}</pre>
+      <div style="margin-top:8px">${esc(d.goal||'')}</div>`);
+    html += card('梦', (d.dreams||[]).map(x=>`<div class="muted">${esc(x)}</div>`).join('') || '<span class="muted">暂无</span>');
+    document.getElementById('root').innerHTML = html;
+  } catch (e) {
+    document.getElementById('root').innerHTML =
+      '<div class="card">先运行 <code>python scripts/export_phenomenal.py</code> 生成 runtime/phenomenal.json</div>';
+  }
+}
+function card(t, b) { return `<div class="card"><h2>${t}</h2>${b}</div>`; }
+function bar(k, v) {
+  const pct = Math.round(Math.max(0, Math.min(1, v)) * 100);
+  return `<div class="row"><span>${k}</span><span>${pct}%</span></div><div class="bar"><i style="width:${pct}%"></i></div>`;
+}
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+load();
+setInterval(load, 5000);
+</script>
+</body>
+</html>

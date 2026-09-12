@@ -1,0 +1,10 @@
+{
+  "agent_id": "moke_29951db5",
+  "name": "墨客",
+  "template": "moke",
+  "parent_id": "",
+  "trained_turns": 2,
+  "lineage": [],
+  "development": 22.060000000000002,
+  "stage": "conversational"
+}

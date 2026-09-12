@@ -1,0 +1,10 @@
+{
+  "agent_id": "lanxing_d253b19d",
+  "name": "蓝星",
+  "template": "lanxing",
+  "parent_id": "",
+  "trained_turns": 1,
+  "lineage": [],
+  "development": 22.07,
+  "stage": "conversational"
+}
