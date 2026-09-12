@@ -92,8 +92,25 @@ def test_neri_full_verification():
     assert "hysteresis" in result
     assert "time_irreversibility" in result
     assert "report_coupling" in result
+    assert "ness_stability" in result
+    assert "perspective_persistence" in result
     assert "all_signatures_present" in result
     assert "summary" in result
+    assert "n_vars" in result
+
+
+def test_neri_ness_stability():
+    neri = NERI(n_vars=32, n_integrated=16, n_latent=4)
+    result = neri.verify_ness_stability(n_cycles=15)
+    assert "mean_epr" in result
+    assert "is_ness" in result
+
+
+def test_neri_perspective_persistence():
+    neri = NERI(n_vars=32, n_integrated=16, n_latent=4)
+    result = neri.verify_perspective_persistence(n_cycles=10)
+    assert "mean_norm" in result
+    assert "is_persistent" in result
 
 
 def test_mind_has_neri():

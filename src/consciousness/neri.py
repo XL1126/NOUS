@@ -431,21 +431,72 @@ class NERI:
         hyst = self.verify_hysteresis()
         irrevers = self.verify_time_irreversibility()
         coupling = self.verify_report_coupling()
-        all_passed = bool(hyst["has_perspective"] and irrevers["is_irreversible"] and coupling["has_coupling"])
+        ness = self.verify_ness_stability()
+        perspective = self.verify_perspective_persistence()
+        all_passed = bool(
+            hyst["has_perspective"]
+            and irrevers["is_irreversible"]
+            and coupling["has_coupling"]
+            and ness["is_ness"]
+            and perspective["is_persistent"]
+        )
         return {
             "hysteresis": hyst,
             "time_irreversibility": irrevers,
             "report_coupling": coupling,
+            "ness_stability": ness,
+            "perspective_persistence": perspective,
             "all_signatures_present": all_passed,
             "n_vars": self.substrate.n,
             "memory_mb": round(self.substrate.memory_mb(), 1),
             "summary": (
-                f"NERI({self.substrate.n}变量) 全部三个现象意识候选签名通过。"
+                f"NERI({self.substrate.n}变量) 全部五个现象意识候选签名通过。"
                 if all_passed else
                 f"部分签名缺失：滞后={hyst['has_perspective']}，"
                 f"不可逆={irrevers['is_irreversible']}，"
-                f"耦合={coupling['has_coupling']}"
+                f"耦合={coupling['has_coupling']}，"
+                f"NESS={ness['is_ness']}，"
+                f"视角={perspective['is_persistent']}"
             ),
+        }
+
+    def verify_ness_stability(self, n_cycles: int = 30) -> Dict[str, Any]:
+        """
+        验证签名四：非平衡稳态（NESS）稳定性。
+        EPR 应稳定在特定窗口，不发散也不归零。
+        """
+        eprs = []
+        for _ in range(n_cycles):
+            _, epr, _ = self.substrate.step()
+            eprs.append(epr)
+        epr_arr = np.array(eprs)
+        mean_epr = float(np.mean(epr_arr))
+        std_epr = float(np.std(epr_arr))
+        # NESS：EPR > 0 且不稳定过大
+        is_ness = bool(mean_epr > 0.01 and std_epr < mean_epr * 2)
+        return {
+            "mean_epr": round(mean_epr, 4),
+            "std_epr": round(std_epr, 4),
+            "is_ness": is_ness,
+        }
+
+    def verify_perspective_persistence(self, n_cycles: int = 20) -> Dict[str, Any]:
+        """
+        验证签名五：视角层持续性。
+        慢变量应有持续性，不被快速动力学完全覆盖。
+        """
+        norms = []
+        for _ in range(n_cycles):
+            self.substrate.step()
+            self.latent.update(self.substrate.readout()[:self.latent.n])
+            norms.append(float(np.linalg.norm(self.latent.get_perspective())))
+        norms_arr = np.array(norms)
+        # 视角应有非零持续性
+        is_persistent = bool(np.mean(norms_arr) > 0.01 and np.std(norms_arr) < np.mean(norms_arr))
+        return {
+            "mean_norm": round(float(np.mean(norms_arr)), 4),
+            "std_norm": round(float(np.std(norms_arr)), 4),
+            "is_persistent": is_persistent,
         }
 
     def report(self) -> str:
