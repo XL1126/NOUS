@@ -38,6 +38,7 @@ from .consciousness.self_pole import SelfPole
 from .consciousness.temporal import TemporalMind
 from .consciousness.stream import ConsciousnessStream, ConsciousState
 from .consciousness.neri import NERI
+from .consciousness.emergence import EmergenceMapper
 from .agency.actions import ActionLoop
 from .agency.boundary import SelfWorldBoundary
 
@@ -140,6 +141,9 @@ class NousMind:
         # NERI：非平衡递归整合器（现象意识候选架构）
         # 规模：1024 变量稀疏耦合（交互速度优先；2048/4096 可选）
         self.neri = NERI(n_vars=1024, n_integrated=128, n_latent=16, rng=self.rng)
+        # 涌现内容生成：NERI 动力学 → 思维内容
+        self.emergence = EmergenceMapper(self.space, rng=self.rng)
+        self.last_emergent_thought = ""
         # SOI 线索缓存（用于自我归属贝叶斯更新）
         self._soi_appearance = 0.5
         self._soi_contiguity = 0.5
@@ -310,28 +314,44 @@ class NousMind:
 
     def _neri_to_language(self, neri_state) -> Dict[str, Any]:
         """
-        突破：NERI 非平衡动力学 → 语言调制参数。
+        突破：NERI 非平衡动力学 → 语言调制参数 + 涌现内容。
 
         EPR 高 → 活跃、展开
         FDT 违反大 → 惊讶、追问
         视角强度高 → 自信、第一人称
         NESS 不稳定 → 犹豫、简短
+        涌现概念 → 直接成为思维内容
         """
         epr = getattr(neri_state, "epr", 0.0)
         fdt = getattr(neri_state, "fdt_violation", 0.0)
-        p_norm = float(np.linalg.norm(getattr(neri_state, "slow", np.zeros(4))))
+        slow = getattr(neri_state, "slow", np.zeros(4))
+        p_norm = float(np.linalg.norm(slow))
+        fast = getattr(neri_state, "fast", np.zeros(32))
+        depth = getattr(neri_state, "recursion_depth", 2)
+
+        # 涌现内容：NERI 动力学 → 概念空间
+        emergent = self.emergence.map(
+            fast_state=fast if isinstance(fast, np.ndarray) else np.zeros(32),
+            perspective=slow if isinstance(slow, np.ndarray) else np.zeros(4),
+            epr=epr,
+            fdt=fdt,
+            recursion_depth=depth,
+        )
+        emergent_thought = self.emergence.to_thought(emergent)
+        self.last_emergent_thought = emergent_thought
+
         return {
             "epr": epr,
             "fdt": fdt,
             "perspective": p_norm,
-            # 活跃度：EPR 越高越活跃
             "activity": float(np.clip(epr / 5.0, 0, 1)),
-            # 惊讶度：FDT 违反越大越惊讶
             "surprise": float(np.clip(fdt / 3.0, 0, 1)),
-            # 自信度：视角越强越自信
             "confidence": float(np.clip(p_norm / 8.0, 0, 1)),
-            # 犹豫度：NESS 不稳定时犹豫
             "hesitation": float(np.clip(1.0 - p_norm / 8.0, 0, 1)),
+            # 涌现内容
+            "emergent": emergent,
+            "emergent_thought": emergent_thought,
+            "cognitive_state": emergent.cognitive_state,
         }
 
     def _apply_neri_modulation(self, reply: str, neri_mod: Dict[str, Any]) -> str:
@@ -382,14 +402,20 @@ class NousMind:
             parts = [reply]
             for idx in chosen:
                 _, opts = candidates[idx]
-                parts.append(opts[int(self.rng.integers(0, len(opts)))])
-            result = " ".join(parts)
-        else:
-            result = reply
+                parts.append(self.rng.choice(opts))
+            reply = " ".join(parts)
 
-        if len(result) > 200:
-            result = result[:197] + "…"
-        return result
+        # 突破：涌现内容直接进入回复
+        emergent_thought = neri_mod.get("emergent_thought", "")
+        emergent = neri_mod.get("emergent")
+        if emergent and emergent.is_novel and float(self.rng.random()) < 0.4:
+            # 40% 概率：涌现的新概念直接成为内言
+            reply += f" （内言：{emergent_thought}）"
+        elif emergent_thought and float(self.rng.random()) < 0.15:
+            # 15% 概率：关联概念作为补充
+            reply += f" （{emergent_thought}）"
+
+        return reply
 
     def _resolve_anaphora(self, text: str) -> str:
         t = text.strip()
