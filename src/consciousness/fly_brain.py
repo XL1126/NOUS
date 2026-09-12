@@ -243,6 +243,41 @@ class FlyBrainInspired:
             },
         }
 
+    def couple_with_neri(self, neri_state, neri_mod: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        耦合果蝇脑与 NERI：
+        - 中央复合体朝向 ← NERI 视角方向
+        - 蘑菇体稀疏度 ← NERI EPR
+        - 扇形体觉醒 ← NERI FDT
+        - 多巴胺 ← NERI 活跃度
+        """
+        epr = neri_mod.get("epr", 0.0)
+        fdt = neri_mod.get("fdt", 0.0)
+        activity = neri_mod.get("activity", 0.5)
+        perspective = neri_mod.get("perspective", 0.0)
+
+        # 中央复合体：NERI 视角 → 朝向
+        self.cc_heading = float(np.clip(perspective * 0.5, -1, 1))
+
+        # 蘑菇体：EPR → 稀疏度调节
+        target_sparsity = float(np.clip(0.05 + 0.1 * epr, 0.01, 0.2))
+        threshold = np.percentile(self.mb_kenyon, 100 * (1 - target_sparsity))
+        self.mb_kenyon = self.mb_kenyon * (self.mb_kenyon > threshold)
+
+        # 扇形体：FDT → 觉醒
+        self.fsb_arousal = 0.9 * self.fsb_arousal + 0.1 * activity
+
+        # 多巴胺：活跃度
+        self.da_level = 0.9 * self.da_level + 0.1 * activity
+
+        return {
+            "coupled": True,
+            "cc_heading": self.cc_heading,
+            "mb_sparsity": float(np.mean(self.mb_kenyon > 0)),
+            "fsb_arousal": self.fsb_arousal,
+            "da_level": self.da_level,
+        }
+
     def report(self) -> str:
         return (
             f"果蝇脑启发：CC朝向={self.cc_heading:.2f} "

@@ -506,6 +506,8 @@ class NousMind:
             reward=0.5 if intent in ("remember", "teach_fact") else 0.1,
             predicted_reward=0.3,
         )
+        # 果蝇脑与 NERI 耦合
+        fly_neri_coupling = self.fly_brain.couple_with_neri(neri_state, neri_mod)
 
         reply, learned = self._compose_reply(intent, iconf, raw, vec, labels, focus, bc)
         # 用 NERI 动力学调制回复

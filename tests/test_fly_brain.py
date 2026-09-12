@@ -70,3 +70,12 @@ def test_fly_brain_report():
     fb.full_update(np.random.standard_normal(32))
     report = fb.report()
     assert "果蝇脑" in report
+
+
+def test_fly_brain_neri_coupling():
+    fb = FlyBrainInspired()
+    neri_mod = {"epr": 0.5, "fdt": 0.3, "activity": 0.7, "perspective": 0.6}
+    result = fb.couple_with_neri(None, neri_mod)
+    assert result["coupled"] is True
+    assert "cc_heading" in result
+    assert "mb_sparsity" in result
