@@ -226,7 +226,62 @@ self.x = np.clip(self.x, -10.0, 10.0)  # 每步裁剪
 
 ---
 
-## 六、设计原则（避免重复踩坑）
+## 六、GPU 相关（2026-09-12 新增）
+
+### 6.1 CuPy 可以 import 但 kernel 编译失败
+
+**现象**：
+```
+RuntimeError: CuPy failed to load nvrtc64_112_0.dll
+```
+
+**原因**：CuPy 的 `cp.array()` 和 `cp.sum()` 不需要 nvrtc，但 `x * x * x`（element-wise kernel）需要。只测 `cp.sum()` 会误判 GPU 可用。
+
+**解决**：GPU 检测必须测 kernel 操作：
+```python
+_test = cp.array([1.0, 2.0])
+_ = float(cp.sum(_test * _test * _test))  # 必须测 element-wise
+```
+
+**教训**：GPU 可用性检测要覆盖实际会用的操作类型。
+
+### 6.2 numpy 数组传给 CuPy 的 `+=` 报错
+
+**现象**：`TypeError: Unsupported type <class 'numpy.ndarray'>`
+
+**原因**：`self.x` 是 CuPy 数组，但 `signal` 是 numpy 数组，`cupy += numpy` 不支持。
+
+**解决**：`inject()` 中先转换：
+```python
+if self.use_gpu:
+    signal = to_gpu(signal)
+self.x[:n] += gain * signal[:n]
+```
+
+### 6.3 CuPy sparse 需要 cusparse DLL
+
+**现象**：`ImportError: DLL load failed while importing cusparse`
+
+**原因**：`cp.sparse.csr_matrix` 需要 cusparse 运行时，pip 安装的 `nvidia-cusparse-cu11` 可能不完整。
+
+**解决**：GPU 模式下用稠密矩阵（4096²×8=128MB，4GB VRAM 够用），避免 cusparse 依赖。
+
+### 6.4 pip 安装 CUDA 运行时库的 DLL 路径
+
+**现象**：CuPy 报 `CUDA path could not be detected`
+
+**原因**：pip 安装的 `nvidia-*` 包把 DLL 放在 site-packages 下，不在系统 PATH。
+
+**解决**：
+```python
+import nvidia, os
+base = os.path.dirname(nvidia.__file__)
+os.environ["PATH"] = os.path.join(base, "cuda_runtime/bin") + os.pathsep + os.environ["PATH"]
+```
+
+---
+
+## 七、设计原则（避免重复踩坑）
 
 1. **先具体后泛化**：意图检测、知识匹配、焦点选择都遵循此原则
 2. **数值稳定性**：任何动力学系统都要有 clip/防溢出
@@ -234,3 +289,5 @@ self.x = np.clip(self.x, -10.0, 10.0)  # 每步裁剪
 4. **测试隔离**：状态机测试要同时控制所有相关变量
 5. **先跑测试再重构**：改参数名前全局搜索旧名
 6. **PowerShell 陷阱**：复杂 Python 代码写脚本文件，不要嵌套引号
+7. **GPU 检测要测 kernel**：`cp.sum()` 不够，要测 element-wise
+8. **CuPy/numpy 混用要转换**：`to_gpu()` / `to_cpu()` 显式转换
