@@ -1,10 +1,8 @@
-# Selection of experience for memory by hippocampal sharp wave ripples（海马尖波涟漪对记忆体验的选择）
+﻿# Selection of experience for memory by hippocampal sharp wave ripples（海马尖波涟漪对记忆体验的选择）
 
 ## 基本信息
 
 - **原始链接**：https://www.science.org/doi/abs/10.1126/science.adk8261
-- **访问状态**：可访问（HTTP 200）
-- **访问时间**：2026-09-12
 - **期刊**：Science
 - **发表信息**：2024年3月28日，第383卷第6690期，1478–1483页
 - **DOI**：10.1126/science.adk8261

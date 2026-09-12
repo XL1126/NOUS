@@ -1,10 +1,8 @@
-# nengo_spa.algebras — Nengo SPA 代数模块文档
+﻿# nengo_spa.algebras — Nengo SPA 代数模块文档
 
 ## 基本信息
 
 - **原始链接**：https://www.nengo.ai/nengo-spa/v1.3.0/modules/nengo_spa.algebras.html
-- **访问状态**：可访问（HTTP 200）
-- **访问时间**：2026-09-12
 - **文档类型**：Python库API文档（技术文档）
 - **库名称**：Nengo SPA（Semantic Pointer Architecture，语义指针架构）
 - **版本**：v1.3.0

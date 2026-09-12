@@ -1,10 +1,8 @@
-# Neither Theory Survived What the Cogitate Consortium's Adversarial Test Found（Cogitate联盟对抗性测试：两大意识理论均未通过）
+﻿# Neither Theory Survived What the Cogitate Consortium's Adversarial Test Found（Cogitate联盟对抗性测试：两大意识理论均未通过）
 
 ## 基本信息
 
 - **原始链接**：https://theconsciousness.ai/posts/cogitate-consortium-adversarial-iit-gnw-consciousness-nature-2025/
-- **访问状态**：可访问（HTTP 200）
-- **访问时间**：2026-09-12
 - **来源网站**：The Consciousness（theconsciousness.ai）
 - **发布日期**：2026年6月29日
 - **文章类型**：研究评论/深度分析

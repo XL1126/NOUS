@@ -1,10 +1,8 @@
-# LIDA: A Computational Model of Global Workspace Theory and Developmental Learning（LIDA：全局工作空间理论与发展学习的计算模型）
+﻿# LIDA: A Computational Model of Global Workspace Theory and Developmental Learning（LIDA：全局工作空间理论与发展学习的计算模型）
 
 ## 基本信息
 
 - **原始链接**：https://ccrg.cs.memphis.edu/assets/papers/LIDA%20paper%20Fall%20AI%20Symposium%20Final.pdf
-- **访问状态**：可访问（HTTP 200，PDF文件）
-- **访问时间**：2026-09-12
 - **文献类型**：会议论文（PDF）
 - **会议**：AAAI Fall Symposium（美国人工智能协会秋季研讨会）
 - **发表年份**：2007年

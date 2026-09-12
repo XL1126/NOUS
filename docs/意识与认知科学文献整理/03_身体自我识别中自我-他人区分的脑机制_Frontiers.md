@@ -1,10 +1,8 @@
-# Brain mechanisms underlying self-other distinction for bodily self-recognition（身体自我识别中自我-他人区分的脑机制）
+﻿# Brain mechanisms underlying self-other distinction for bodily self-recognition（身体自我识别中自我-他人区分的脑机制）
 
 ## 基本信息
 
 - **原始链接**：https://www.frontiersin.org/journals/neural-circuits/articles/10.3389/fncir.2026.1781653/full
-- **访问状态**：可访问（HTTP 200）
-- **访问时间**：2026-09-12
 - **期刊**：Frontiers in Neural Circuits
 - **发表信息**：2026年3月4日，第20卷
 - **DOI**：10.3389/fncir.2026.1781653

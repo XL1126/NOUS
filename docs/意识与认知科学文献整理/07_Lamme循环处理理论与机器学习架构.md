@@ -1,10 +1,8 @@
-# Feedforward Networks and Recurrent Processing: Lamme's RPT in Machine Learning（前馈网络与循环处理：Lamme循环处理理论在机器学习中的应用）
+﻿# Feedforward Networks and Recurrent Processing: Lamme's RPT in Machine Learning（前馈网络与循环处理：Lamme循环处理理论在机器学习中的应用）
 
 ## 基本信息
 
 - **原始链接**：https://theconsciousness.ai/posts/lamme-recurrent-processing-theory-llm-architecture-2026/
-- **访问状态**：可访问（HTTP 200）
-- **访问时间**：2026-09-12
 - **来源网站**：The Consciousness（theconsciousness.ai）
 - **发布日期**：2026年7月1日
 - **文章类型**：研究评论/理论分析
