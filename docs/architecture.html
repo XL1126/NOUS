@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>架构 · NOUS</title>
+  <meta name="description" content="NOUS 闭合循环架构、模块职责、与 Transformer 的差异、v1.5 Fly-NERI 耦合。" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./">NOUS <span>νοῦς</span></a>
+    <nav>
+      <a href="index.html">总览</a>
+      <a href="architecture.html" class="active">架构</a>
+      <a href="consciousness.html">意识立场</a>
+      <a href="docs.html">文档库</a>
+      <a href="https://github.com/XL1126/NOUS" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <div class="page-hero">
+      <div class="breadcrumb"><a href="./">NOUS</a> / 架构</div>
+      <h1>闭合循环与模块地图</h1>
+      <p class="lead">
+        所有意识相关功能要件都在<strong>同一闭合循环</strong>里互相驱动：身体提供驱动与增益，
+        预测产生惊讶，工作空间竞争点火，记忆 / 目标 / 语言消费广播，学习结果写回。
+      </p>
+    </div>
+
+    <h2>系统闭合循环</h2>
+    <div class="arch">
+<pre>
+        ┌─────────────────────────────────────────┐
+        │                 <span class="hi">SOMA</span>                     │
+        │  energy/sleep/stress/social/curiosity    │
+        │  attention_gain · learning_gain · policy │
+        └───────────────┬─────────────────────────┘
+                        │ 驱动 / 增益
+                        ▼
+用户话语 → tokenize → ConceptSpace(512) → PredictiveModel(误差/新颖)
+                        │                        │
+                        ▼                        │
+              <span class="hi">GlobalWorkspace</span> 竞争/点火/广播 ◄────┘
+                        │
+          ┌─────────────┼─────────────┐
+          ▼             ▼             ▼
+     MemoryBank      Goals/Self    Language
+     WM/EP/Sem       Meta/Other    Construction
+     Proc/Auto       InnerSpeech   Generator
+          │             │             │
+          └─────────────┴──────┬──────┘
+                               ▼
+                            回复 + 学习写回
+      </pre>
+    </div>
+
+    <h2>v1.5 架构全貌（STATUS）</h2>
+    <div class="arch">
+<pre>
+SOMA(身体) → 预测 → 工作空间(<span class="hi">TRN除法归一化</span>) → <span class="hi">NERI</span>(Langevin SDE)
+                                                    ↓
+                                              <span class="hi2">涌现内容生成</span>
+                                                    ↓
+FlyEM果蝇脑(环形吸引子/稀疏编码/觉醒门控) ←→ NERI耦合
+                                                    ↓
+                                              语言(构式v2)
+                                                    ↓
+                                        意识流 + 睡眠 + 梦
+      </pre>
+    </div>
+
+    <h2>模块职责</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>路径</th><th>职责</th></tr></thead>
+        <tbody>
+          <tr><td><code>src/soma/body.py</code></td><td>身体、异稳态、事件、策略、构造情绪</td></tr>
+          <tr><td><code>src/concepts/space.py</code></td><td>语义指针、角色填充图</td></tr>
+          <tr><td><code>src/workspace/global_ws.py</code></td><td>竞争点火与广播</td></tr>
+          <tr><td><code>src/predictive/model.py</code></td><td>预测误差与新颖度</td></tr>
+          <tr><td><code>src/memory/systems.py</code></td><td>五类记忆 + 巩固</td></tr>
+          <tr><td><code>src/language/constructions.py</code></td><td>分词 / 意图 / 构式生成</td></tr>
+          <tr><td><code>src/self_model/meta.py</code></td><td>目标 / 元认知 / 自我 / 他者 / 内言</td></tr>
+          <tr><td><code>src/knowledge/seed.py</code></td><td>种子知识（200+ 条目）</td></tr>
+          <tr><td><code>src/consciousness/</code></td><td>NERI、意识流、梦、果蝇脑、现象标记</td></tr>
+          <tr><td><code>src/mind.py</code></td><td><strong>NousMind</strong> 总集成</td></tr>
+          <tr><td><code>src/fleet.py</code></td><td>多意识体 spawn / 列表 / 跨体状态</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>工程映射（科学 → 代码）</h2>
+    <p class="body">
+      文献与生物学机制被映射为可运行模块，避免「读了很多却落不到代码」。
+      摘自
+      <a href="https://github.com/XL1126/NOUS/blob/main/docs/%E8%84%91%E9%83%A8%E6%84%8F%E8%AF%86%E4%BF%A1%E6%81%AF/05_%E5%AF%B9NOUS%E7%9A%84%E5%B7%A5%E7%A8%8B%E6%98%A0%E5%B0%84.md" target="_blank" rel="noopener">对 NOUS 的工程映射</a>。
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>科学来源</th><th>机制</th><th>NOUS 模块</th></tr></thead>
+        <tbody>
+          <tr><td>Baars / Dehaene GNW</td><td>竞争 → 点火 → 广播 → 可报告</td><td><code>workspace/global_ws.py</code></td></tr>
+          <tr><td>Block A/P 意识</td><td>访问 vs 现象代理</td><td>figure=access；presence/vividness=proxy</td></tr>
+          <tr><td>Tononi IIT（代理）</td><td>整合–分化</td><td><code>core._integration</code>（非真 Φ）</td></tr>
+          <tr><td>Friston / Clark PP</td><td>预测误差 / 惊讶</td><td><code>predictive/model.py</code></td></tr>
+          <tr><td>Seth 在场感</td><td>预测性自我</td><td>presence + body</td></tr>
+          <tr><td>Damasio / Barrett</td><td>躯体标记 / 构造情绪</td><td><code>soma/body.py</code></td></tr>
+          <tr><td>Craig 内感受</td><td>身体状态上行</td><td>Soma vector</td></tr>
+          <tr><td>Sterling 异稳态</td><td>设定点漂移</td><td><code>set_point</code> demand</td></tr>
+          <tr><td>TRN 门控</td><td>侧抑制</td><td>SpikeRace + workspace</td></tr>
+          <tr><td>Buzsáki 睡眠 / SWR</td><td>离线重组</td><td><code>dream.py</code> + consolidate</td></tr>
+          <tr><td>Tulving 记忆</td><td>情景 / 语义</td><td><code>memory/systems.py</code></td></tr>
+          <tr><td>Eliasmith SPA</td><td>语义指针</td><td><code>concepts/space.py</code></td></tr>
+          <tr><td>构式语法</td><td>非 LM 语言</td><td><code>language/constructions.py</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>与 Transformer 的差异</h2>
+    <div class="layers">
+      <div class="layer">
+        <div class="name">无注意力 LM</div>
+        <p>不用注意力语言模型，不做梯度续写；语言 = 构式槽位 + 概念检索 + 组合。</p>
+      </div>
+      <div class="layer">
+        <div class="name">在线学习</div>
+        <p>学习 = 在线绑定 + 强化程序权重 + 巩固，不是反向传播。</p>
+      </div>
+      <div class="layer">
+        <div class="name">功能代理</div>
+        <p>实现的是「可报告工作空间 + 预测 + 自我维护 + 目标 / 内言」的功能代理，不声称现象意识。</p>
+      </div>
+    </div>
+
+    <h2>仓库地图与常用命令</h2>
+    <div class="arch">
+<pre>
+.
+├── main.py              # CLI 入口
+├── config/default.yaml  # 默认配置
+├── src/                 # NousMind 与各子系统
+├── scripts/             # verify / teach / think / bench / fleet …
+├── tests/               # pytest（STATUS 称 65 passed）
+├── docs/                # 架构、意识立场、文献、踩坑、进度
+├── runtime/             # 持久化状态与 fleet 实例（JSON）
+└── index.html           # 现象面板等页面（实验性）
+
+python main.py                      # 交互对话
+python main.py --demo               # 内置演示脚本
+python scripts/verify.py            # 测试 / 验收
+python scripts/teach.py             # 教学课程
+python scripts/think.py             # 自主思维
+python scripts/neri_scale_bench.py  # NERI 规模基准
+python scripts/long_autonomous.py   # 长时程自主运行
+python scripts/fleet_cli.py list    # 多体列表
+      </pre>
+    </div>
+
+    <h2>原文链接</h2>
+    <div class="sites">
+      <a href="https://github.com/XL1126/NOUS/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener">ARCHITECTURE.md</a>
+      <a href="https://github.com/XL1126/NOUS/blob/main/docs/STATUS.md" target="_blank" rel="noopener">STATUS.md</a>
+      <a href="https://github.com/XL1126/NOUS/blob/main/README.md" target="_blank" rel="noopener">README.md</a>
+    </div>
+  </div>
+
+  <footer>NOUS 架构页 · <a href="https://github.com/XL1126/NOUS" target="_blank" rel="noopener">GitHub</a></footer>
+</body>
+</html>

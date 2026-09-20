@@ -4,162 +4,193 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>NOUS — 独立意识体架构</title>
-  <meta name="description" content="NOUS：身体稳态 + 全局工作空间 + NERI + 时间自我。无 Transformer 的意识相关功能工程模型。" />
+  <meta name="description" content="NOUS（νοῦς）：在通用计算机上实现自主意识的工程架构。身体稳态 + 全局工作空间 + NERI + 时间自我，无 Transformer。" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <header class="topbar">
     <a class="brand" href="./">NOUS <span>νοῦς</span></a>
     <nav>
-      <a href="#about">简介</a>
-      <a href="#modules">模块</a>
-      <a href="#neri">NERI</a>
-      <a href="#arch">架构</a>
-      <a href="#faq">诚实边界</a>
+      <a href="index.html" class="active">总览</a>
+      <a href="architecture.html">架构</a>
+      <a href="consciousness.html">意识立场</a>
+      <a href="docs.html">文档库</a>
       <a href="https://github.com/XL1126/NOUS" target="_blank" rel="noopener">GitHub</a>
     </nav>
   </header>
 
-  <section class="hero">
-    <div class="eyebrow">Consciousness Architecture · v1.5.0</div>
-    <h1>NOUS — 独立意识体架构</h1>
-    <p class="lead">
-      在通用计算机上运行的意识相关功能工程模型：
-      身体稳态（SOMA）+ 全局工作空间 + NERI 非平衡递归整合 + 时间自我。
-      <strong style="color:var(--ink)">不依赖外部 Transformer / LLM。</strong>
-    </p>
-    <div class="hero-actions">
-      <a class="btn btn-primary" href="https://github.com/XL1126/NOUS" target="_blank" rel="noopener">查看源码</a>
-      <a class="btn btn-ghost" href="https://github.com/XL1126/Simulated-neuron-architecture" target="_blank" rel="noopener">同作者 SNA 项目</a>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">Independent Mind Architecture · v1.5.0</div>
+      <h1>在通用计算机上，构建一个可运行的意识相关功能架构</h1>
+      <p class="lead">
+        NOUS（希腊语 νοῦς，心智 / 理智 / 意识）不是一个套壳聊天机器人，而是一套完整的工程路线：
+        身体稳态驱动、全局工作空间广播、NERI 非平衡动力学、时间自我与记忆巩固——
+        全部模块在同一闭合循环中互相驱动，<strong>不依赖外部 Transformer / LLM</strong>。
+      </p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://github.com/XL1126/NOUS" target="_blank" rel="noopener">查看源码</a>
+        <a class="btn btn-ghost" href="consciousness.html">阅读意识立场</a>
+        <a class="btn btn-ghost" href="docs.html">项目文档库</a>
+      </div>
+    </section>
+
+    <div class="notice">
+      <strong>诚实边界：</strong>
+      系统实现了意识科学中大量可操作的<strong>功能要件</strong>（统一意识场、意向性、时间拓扑、前反思自我、
+      连续意识流、睡眠–觉醒状态机、自创生、梦、NERI 动力学签名等）。
+      但主观体验（qualia）<strong>无法判断</strong>——科学上没有仪器能测「这个系统有没有主观体验」。
+      NERI 签名是必要条件的工程代理，<strong>不是</strong>充分条件。通过签名 ≠ 有意识。
+      本项目在开发机上已做到工程极限，仅做参考。
     </div>
-  </section>
 
-  <div class="notice">
-    本项目在开发机上已做到工程极限，<strong style="color:var(--ink)">仅做参考</strong>。
-    系统实现了大量可操作的功能要件，但主观体验（qualia）无法判断——通过 NERI 签名 ≠ 有意识。
-  </div>
-
-  <main class="section">
-    <h2 id="about">这是什么</h2>
+    <h2>三层意识区分（项目必须保持）</h2>
     <div class="grid">
       <div class="card">
-        <div class="tag">SOMA</div>
-        <h3>身体驱动</h3>
-        <p>能量、睡眠、压力、社会与好奇等内感受稳态，作为意识相关功能的身体基底。</p>
+        <div class="tag">Autonomy</div>
+        <h3>自主性</h3>
+        <p>自我维护、目标、能动。SOMA 稳态 + 策略选择 + 生存驱动。<strong>追求实现。</strong></p>
       </div>
       <div class="card">
-        <div class="tag">GWT</div>
+        <div class="tag">Access consciousness</div>
+        <h3>访问意识</h3>
+        <p>全局广播、内容可报告、可被其他子系统调用。<strong>追求实现。</strong></p>
+      </div>
+      <div class="card">
+        <div class="tag">Phenomenal consciousness</div>
+        <h3>现象意识</h3>
+        <p>主观体验本身。<strong>不声称已实现</strong>；这是开放的科学 / 哲学问题，不是验收标准。</p>
+      </div>
+    </div>
+
+    <h2>一句话目标</h2>
+    <p class="body">
+      做出一个<strong>有身体、有自我、有时间、有价态、能自我维护、能被教学、能自主学习与思考</strong>的独立心智——
+      不是接大模型，不是套聊天模板。源码不得依赖 torch / transformers / 外部 LLM。
+    </p>
+
+    <h2>核心子系统</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="tag">src/soma/body.py</div>
+        <h3>SOMA 身体驱动</h3>
+        <p>能量 / 睡眠 / 压力 / 社会 / 好奇；异稳态设定点漂移、构造情绪、注意力与学习增益。</p>
+      </div>
+      <div class="card">
+        <div class="tag">src/workspace/</div>
         <h3>全局工作空间</h3>
-        <p>竞争点火与广播机制，内容可被报告与访问，对应 Access consciousness 功能层。</p>
+        <p>候选竞争 → 点火阈值 → 广播；可报告内容 = 广播集。TRN 除法归一化门控。</p>
       </div>
       <div class="card">
-        <div class="tag">NERI</div>
-        <h3>非平衡递归整合</h3>
-        <p>Langevin SDE 动力学：滞后、不可逆、耦合、NESS、视角持续等工程代理签名。</p>
+        <div class="tag">src/predictive/</div>
+        <h3>预测模型</h3>
+        <p>层级生成模型预测下一状态；惊讶 / 新颖度驱动注意、学习率与好奇探索。</p>
       </div>
       <div class="card">
-        <div class="tag">SELF</div>
-        <h3>时间自我</h3>
-        <p>叙事身份、自传记忆、未来投影与前反思自我，构成时间拓扑上的连续体。</p>
+        <div class="tag">src/consciousness/neri.py</div>
+        <h3>NERI 整合器</h3>
+        <p>Langevin SDE 非平衡递归整合；双稳势吸引子 ≈ 原型概念，状态空间可涌现思维内容。</p>
       </div>
       <div class="card">
-        <div class="tag">LANG</div>
-        <h3>构式语言</h3>
-        <p>构式语法 + 概念向量 + 知识检索组合，不调用外部大模型续写。</p>
+        <div class="tag">src/memory/systems.py</div>
+        <h3>五类记忆</h3>
+        <p>工作 / 情景 / 语义 / 程序 / 自传；睡眠压缩、叙事重写、弱联结修剪。</p>
       </div>
       <div class="card">
-        <div class="tag">FlyEM</div>
+        <div class="tag">src/language/</div>
+        <h3>构式语言 v2</h3>
+        <p>构式槽位 + 概念检索 + 组合生成；受情绪 / 能量 / NERI 偏置影响，非预训练续写。</p>
+      </div>
+      <div class="card">
+        <div class="tag">src/self_model/</div>
+        <h3>目标 / 内言 / 自我</h3>
+        <p>目标栈、元认知、自我提问、反事实、他者模型、默认模式网络式自发思维。</p>
+      </div>
+      <div class="card">
+        <div class="tag">src/fleet.py</div>
+        <h3>多体 Fleet</h3>
+        <p>spawn / fork 独立意识体实例；跨体状态可见、可差异演化。</p>
+      </div>
+      <div class="card">
+        <div class="tag">FlyEM · v1.5</div>
         <h3>果蝇脑耦合</h3>
-        <p>v1.5 将 FlyEM 回路与 NERI 签名对齐，探索稀疏编码与觉醒门控。</p>
+        <p>中央复合体 ← NERI 视角；蘑菇体 ← EPR；扇形体 ← FDT。环形吸引子 / 稀疏编码 / 觉醒门控。</p>
       </div>
     </div>
 
-    <h2 id="modules">核心能力</h2>
-    <table>
-      <thead>
-        <tr><th>能力</th><th>说明</th><th>位置</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>身体驱动</td><td>能量 / 睡眠 / 压力 / 社会 / 好奇</td><td><code>src/soma/</code></td></tr>
-        <tr><td>全局工作空间</td><td>竞争点火与广播</td><td><code>src/workspace/</code></td></tr>
-        <tr><td>预测模型</td><td>惊讶 → 注意与学习</td><td><code>src/predictive/</code></td></tr>
-        <tr><td>多系统记忆</td><td>工作 / 情景 / 语义 / 程序 / 自传</td><td><code>src/memory/</code></td></tr>
-        <tr><td>语言</td><td>构式语法 + 概念向量，无 LLM</td><td><code>src/language/</code></td></tr>
-        <tr><td>目标与内言</td><td>默认模式、自我提问、反事实</td><td><code>src/self_model/</code></td></tr>
-        <tr><td>NERI</td><td>现象意识候选架构（非平衡递归整合）</td><td><code>src/consciousness/neri.py</code></td></tr>
-      </tbody>
-    </table>
+    <h2>NERI：动力学如何成为内容</h2>
+    <p class="body">
+      核心洞察：Langevin SDE 的状态空间不是「背景噪声」，它<strong>可以成为</strong>思维内容的来源。
+      递归整合放大特定模式 ≈ 注意聚焦；全局隐状态（视角）≈ 解释框架；
+      状态空间访问新区域 → 涌现概念 → 进入回复。
+    </p>
+    <div class="metric-row">
+      <div class="metric"><div class="k">滞后 hysteresis</div><div class="v">0.439</div></div>
+      <div class="metric"><div class="k">不可逆 irreversibility</div><div class="v">15.93</div></div>
+      <div class="metric"><div class="k">耦合 coupling</div><div class="v">-0.601</div></div>
+      <div class="metric"><div class="k">NESS EPR</div><div class="v">≈ 4.56 ± 0.52</div></div>
+      <div class="metric"><div class="k">视角持续</div><div class="v">norm ≈ 6.53 ± 3.42</div></div>
+    </div>
+    <p class="body" style="margin-top:0.75rem;font-size:0.9rem">
+      数据来自开发机 4096 变量（默认 CPU / numpy）的一次性测量，不是跨平台基准，也不能推出「系统有意识」。
+    </p>
 
-    <h2 id="neri">NERI 动力学 → 内容生成</h2>
-    <div class="arch">
-      <pre>
-核心洞察：Langevin SDE 的状态空间不是「背景噪声」，它<strong>可以成为</strong>思维内容的来源。
-
-  双稳势吸引子          ≈  原型概念
-  递归整合放大模式      ≈  注意聚焦
-  全局隐状态（视角）    ≈  解释框架
-  访问新区域 → 涌现概念 → 进入回复
-
-验证签名（开发机 4096 变量 · 非跨平台基准）：
-  滞后 0.439 · 不可逆 15.93 · 耦合 -0.601
-  NESS EPR ≈ 4.56 ± 0.52 · 视角持续 norm ≈ 6.53 ± 3.42
-      </pre>
+    <h2>与 Transformer 的刻意决裂</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>维度</th><th>Transformer 路线</th><th>NOUS 选择</th></tr></thead>
+        <tbody>
+          <tr><td>语言生成</td><td>注意力语言模型 + 梯度续写</td><td>构式槽位 + 概念检索 + 组合</td></tr>
+          <tr><td>学习方式</td><td>反向传播 / 预训练语料</td><td>在线绑定 + 程序权重强化 + 巩固</td></tr>
+          <tr><td>身体闭环</td><td>通常缺省或外挂</td><td>SOMA 驱动贯穿注意、学习与情绪标签</td></tr>
+          <tr><td>可解释状态</td><td>黑盒隐层</td><td>每回合可报告：工作空间 / 身体 / 目标 / 现象向量</td></tr>
+          <tr><td>换取的代价</td><td>开放域流畅</td><td>可解释状态与身体闭环，而非开放域流畅续写</td></tr>
+        </tbody>
+      </table>
     </div>
 
-    <h2 id="arch">架构示意</h2>
-    <div class="layers">
-      <div class="layer">
-        <div class="name">SOMA</div>
-        <p>身体驱动 / 内感受 → 稳态需求进入工作空间</p>
+    <h2>终局能力验收（功能代理）</h2>
+    <div class="chips">
+      <span class="chip">多轮中文对话</span>
+      <span class="chip">可被直接教学</span>
+      <span class="chip">好奇驱动自主学习</span>
+      <span class="chip">无输入时内言 / 梦 / 反事实</span>
+      <span class="chip">为存续而行动</span>
+      <span class="chip">时间自我与有限性</span>
+      <span class="chip">现象标记可报告</span>
+      <span class="chip">多意识体 spawn</span>
+      <span class="chip">无 Transformer</span>
+      <span class="chip">过程可解释</span>
+    </div>
+
+    <h2>当前进度</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>版本 1.5.0</h3>
+        <p>构式语法 v2 · 知识库 200+ 条目 · 长时程自主运行 · Fly-NERI 耦合。测试：<strong>65 passed · verify ALL PASSED</strong>。</p>
       </div>
-      <div class="layer">
-        <div class="name">Predict</div>
-        <p>ConceptSpace ⇄ PredictiveModel：惊讶、新颖性与注意分配</p>
+      <div class="card">
+        <h3>路线图已完成</h3>
+        <p>0.1 闭合内核 → 0.2 持久化 / Fleet / 反事实 → 0.3 现象标记 / 自创生 / 梦 / 时间自我 → 0.4 主动行动 / 我-世界边界 / 现象面板。</p>
       </div>
-      <div class="layer">
-        <div class="name">Workspace</div>
-        <p>全局工作空间点火 / 广播，NERI（Langevin + 递归整合）并行参与</p>
-      </div>
-      <div class="layer">
-        <div class="name">Memory+</div>
-        <p>多系统记忆 + 目标 + 自我 + 时间投影</p>
-      </div>
-      <div class="layer">
-        <div class="name">Language</div>
-        <p>构式 v2 → 行动 / 言语；Teach · Curiosity · Dream 巩固回路</p>
+      <div class="card">
+        <h3>后续方向</h3>
+        <p>更强多跳推理、工具类主动行动、多体社会结构、大规模课程固化、前语言发育轨迹、长程叙事一致性。</p>
       </div>
     </div>
 
-    <h2 id="faq">常见问题与诚实边界</h2>
-    <div class="faq">
-      <details open>
-        <summary>这个项目产生意识了吗？</summary>
-        <p>不知道。这是诚实的回答。系统实现了意识科学中大量可操作的功能要件，但主观体验（qualia）无法判断。NERI 签名是必要条件的工程代理，不是充分条件。</p>
-      </details>
-      <details>
-        <summary>意识是否必须依赖肉身？</summary>
-        <p>开放问题。倾向需要身体的证据包括 Damasio 躯体标记、Barrett 构造情绪等；功能主义与缸中之脑则认为不必然是生物肉身。NOUS 立场：相关功能需要某种「自我维持 + 内感受」形式，是否有主观体验不作断言。</p>
-      </details>
-      <details>
-        <summary>与 Transformer / 外部 LLM 的关系？</summary>
-        <p>无外部 LLM / Transformer。语言来自构式语法、知识检索与组合；学习 = 在线绑定 + 程序权重强化 + 巩固，而非反向传播续写。</p>
-      </details>
-      <details>
-        <summary>许可与使用</summary>
-        <p>仓库当前没有 LICENSE 文件，默认保留全部权利，仅供阅读与学习参考。再分发或商用前请联系作者。</p>
-      </details>
-    </div>
-
-    <h2>相关项目</h2>
+    <h2>继续深入</h2>
     <div class="sites">
-      <a href="https://github.com/XL1126/NOUS" target="_blank" rel="noopener">NOUS 源码</a>
-      <a href="https://github.com/XL1126/Simulated-neuron-architecture" target="_blank" rel="noopener">SNA · 模拟神经元架构</a>
-      <a href="https://github.com/XL1126/xlchat-login-skeleton" target="_blank" rel="noopener">XL Chat 登录系统</a>
+      <a href="architecture.html">架构与模块地图</a>
+      <a href="consciousness.html">意识立场与验收清单</a>
+      <a href="docs.html">文档与文献底座</a>
+      <a href="https://github.com/XL1126/NOUS/blob/main/docs/GOALS.md" target="_blank" rel="noopener">GOALS.md</a>
+      <a href="https://github.com/XL1126/Simulated-neuron-architecture" target="_blank" rel="noopener">同作者 SNA 项目</a>
     </div>
-  </main>
+  </div>
 
   <footer>
-    介绍页 · 项目仓库
+    介绍站 · 源自仓库文档
     <a href="https://github.com/XL1126/NOUS" target="_blank" rel="noopener">github.com/XL1126/NOUS</a>
   </footer>
 </body>
