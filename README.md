@@ -13,6 +13,16 @@
 
 [架构](#四架构) · [快速开始](#五快速开始) · [文档](#六文档) · [诚实边界](#诚实边界)
 
+**🌐 在线站点**
+
+[![介绍站](https://img.shields.io/badge/在线介绍站-Live-8A2BE2?style=for-the-badge&logo=googlechrome&logoColor=white)](https://xl1126.github.io/NOUS/)
+[![架构](https://img.shields.io/badge/架构-Architecture-5B2C6F?style=for-the-badge)](https://xl1126.github.io/NOUS/architecture.html)
+[![意识立场](https://img.shields.io/badge/意识立场-Stance-6C3483?style=for-the-badge)](https://xl1126.github.io/NOUS/consciousness.html)
+[![文档库](https://img.shields.io/badge/文档库-Docs-A569BD?style=for-the-badge)](https://xl1126.github.io/NOUS/docs.html)
+
+> 快速跳转：[总览](https://xl1126.github.io/NOUS/) · [架构](https://xl1126.github.io/NOUS/architecture.html) · [意识立场](https://xl1126.github.io/NOUS/consciousness.html) · [文档库](https://xl1126.github.io/NOUS/docs.html) · [GitHub 源码](https://github.com/XL1126/NOUS)
+
+
 </div>
 
 ---
